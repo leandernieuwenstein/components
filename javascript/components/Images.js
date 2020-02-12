@@ -1,3 +1,4 @@
+import { BaseComponent } from './BaseComponent.js';
 import { Paginator } from './Paginator.js';
 
 const IMAGES = [
@@ -6,7 +7,10 @@ const IMAGES = [
 	'img/img3.jpg'
 ];
 
-export class Images extends HTMLElement  {
+export class Images extends BaseComponent  {
+	/**
+	 * @constructor
+	 */
 	constructor() {
 		super();
 
@@ -14,9 +18,12 @@ export class Images extends HTMLElement  {
 			currentImg: 0
 		};
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Draws the component
+	 */
 	Draw(){
 		this.innerHTML = `
 			<img src="` + IMAGES[this.state.currentImg] + `" /><br />
@@ -27,6 +34,9 @@ export class Images extends HTMLElement  {
 		this.BindEvents();
 	}
 
+	/**
+	 * Binds the events
+	 */
 	BindEvents(){
 		let paginator = this.querySelector( 'my-paginator' );
 		paginator.OnNext = () => {
@@ -40,23 +50,33 @@ export class Images extends HTMLElement  {
 		};
 	}
 
+	/**
+	 * Handles the OnNext event from the Paginator child component
+	 */
 	HandlePaginatorOnNext(){
 		if( this.state.currentImg < IMAGES.length - 1 )
 			this.state.currentImg++;
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Handles the OnPrevious event from the Paginator child component
+	 */
 	HandlePaginatorOnPrevious(){
 		if( this.state.currentImg > 0 )
 			this.state.currentImg--;
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Handles the OnPageClick event from the Paginator child component
+	 * @param {int} imgIndex
+	 */
 	HandlePaginatorOnPageClick( imgIndex ){
 		this.state.currentImg = imgIndex;
-		this.Draw();
+		this.RequestDraw();
 	}
 }
 

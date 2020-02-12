@@ -1,3 +1,4 @@
+import { BaseComponent } from './BaseComponent.js';
 import { Paginator } from './Paginator.js';
 
 const VIDEOLINKS = [
@@ -9,29 +10,38 @@ const VIDEOLINKS = [
 	'NMQ8G7MqYC4'
 ];
 
-export class Videos extends HTMLElement  {
+export class Videos extends BaseComponent  {
+	/**
+	 * @constructor
+	 */
 	constructor() {
 		super();
 
 		this.state = {
-			currentVideo: 0
+			currentVideoIndex: 0
 		};
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Draws the component
+	 */
 	Draw(){
 		this.innerHTML = `
-			<iframe width="560" height="315" src="https://www.youtube.com/embed/` + VIDEOLINKS[this.state.currentVideo] + `"
+			<iframe width="560" height="315" src="https://www.youtube.com/embed/` + VIDEOLINKS[this.state.currentVideoIndex] + `"
 				frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
 				allowfullscreen></iframe><br />
-			<my-paginator data-amout-of-pages="` + VIDEOLINKS.length + `"
-				data-current-page="` + this.state.currentVideo + `"></my-paginator>
+			<my-paginator data-page-count="` + VIDEOLINKS.length + `"
+				data-current-page="` + this.state.currentVideoIndex + `"></my-paginator>
 		`;
 
 		this.BindEvents();
 	}
 
+	/**
+	 * Binds the events
+	 */
 	BindEvents(){
 		let paginator = this.querySelector( 'my-paginator' );
 		paginator.OnNext = () => {
@@ -45,23 +55,33 @@ export class Videos extends HTMLElement  {
 		};
 	}
 
+	/**
+	 * Handles the OnNext event from the Paginator child component
+	 */
 	HandlePaginatorOnNext(){
-		if( this.state.currentVideo < VIDEOLINKS.length - 1 )
-			this.state.currentVideo++;
+		if( this.state.currentVideoIndex < VIDEOLINKS.length - 1 )
+			this.state.currentVideoIndex++;
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Handles the OnPrevious event from the Paginator child component
+	 */
 	HandlePaginatorOnPrevious(){
-		if( this.state.currentVideo > 0 )
-			this.state.currentVideo--;
+		if( this.state.currentVideoIndex > 0 )
+			this.state.currentVideoIndex--;
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Handles the OnPageClick event from the Paginator child component
+	 * @param {int} videoIndex
+	 */
 	HandlePaginatorOnPageClick( videoIndex ){
-		this.state.currentVideo = videoIndex;
-		this.Draw();
+		this.state.currentVideoIndex = videoIndex;
+		this.RequestDraw();
 	}
 }
 

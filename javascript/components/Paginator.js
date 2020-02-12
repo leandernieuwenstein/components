@@ -1,4 +1,14 @@
-export class Paginator extends HTMLElement  {
+import { BaseComponent } from './BaseComponent.js';
+
+/**
+ * Attributes:
+ *  data-page-count
+ *  data-current-page
+ */
+export class Paginator extends BaseComponent  {
+	/**
+	 * @constructor
+	 */
 	constructor(){
 		super();
 
@@ -7,19 +17,22 @@ export class Paginator extends HTMLElement  {
 		this.OnPrevious = () => {};
 		this.OnPageClick = ( pageIndex ) => {};
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Draws the component
+	 */
 	Draw(){
 		let prevBtn = `<button class="previous">&lt;</button>`;
 		let nextBtn = `<button class="next">&gt;</button>`;
 		if( this.dataset.currentPage == 0 )
 			prevBtn = `<button class="previous" disabled>&lt;</button>`;
-		if( this.dataset.currentPage >= this.dataset.amoutOfPages - 1 )
+		if( this.dataset.currentPage >= this.dataset.pageCount - 1 )
 			nextBtn = `<button class="next" disabled>&gt;</button>`;
 
 		let pageBtns = '';
-		for( let i = 0; i < this.dataset.amoutOfPages; i++ ){
+		for( let i = 0; i < this.dataset.pageCount; i++ ){
 			let displayPageNr = i + 1;
 			let selected = '';
 			if( i == this.dataset.currentPage )
@@ -33,6 +46,9 @@ export class Paginator extends HTMLElement  {
 		this.BindEvents();
 	}
 
+	/**
+	 * Binds the events of this component
+	 */
 	BindEvents(){
 		this.querySelector( '.next' ).addEventListener('click', () => {
 			this.OnNext();

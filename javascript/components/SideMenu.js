@@ -1,22 +1,56 @@
-export class SideMenu extends HTMLElement  {
+import { BaseComponent } from './BaseComponent.js';
+import { Page } from '../dataObjects/Page.js';
+
+export class SideMenu extends BaseComponent  {
+	/**
+	 * @constructor
+	 */
 	constructor() {
 		super();
+		this.props = {
+			pages: [],
+			currentPageIndex: 0
+		};
 
 		// Bindable event
-		this.OnSelectedLinkChange = () => {};
-
-		this.Init();
+		this.OnSelectedLinkChange = ( url ) => {};
 	}
 
-	Init(){
-		for( let child of this.children ){
-			if( child.dataset.target === this.dataset.selectedLink )
-				child.classList.add( 'selected' );
+	/**
+	 * @param {Page[]} pages
+	 */
+	SetPages( pages ){
+		this.props.pages = pages;
+		this.RequestDraw();
+	}
+
+	SetCurrentPage( index ){
+		this.props.currentPageIndex = index;
+		this.RequestDraw();
+	}
+
+	/**
+	 * Draws the component
+	 * @override
+	 */
+	Draw(){
+		let content = '';
+		for( let i = 0; i < this.props.pages.length; i++ ){
+			let selected = '';
+			if( i == this.props.currentPageIndex )
+				selected = " class='selected'";
+
+			content += `<a data-target="` + i + `"` + selected + `>` + this.props.pages[i].linkText + `</a>`;
 		}
+
+		this.innerHTML = content;
 
 		this.BindEvents();
 	}
 
+	/**
+	 * Binds the events
+	 */
 	BindEvents(){
 		for( let link of this.children ){
 			link.onclick = ( e ) => {

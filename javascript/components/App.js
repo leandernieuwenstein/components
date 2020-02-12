@@ -1,57 +1,76 @@
+import { BaseComponent } from './BaseComponent.js';
 import { SideMenu } from './SideMenu.js';
 import { Videos } from './Videos.js';
 import { Images } from './Images.js';
+import { Page } from '../dataObjects/Page.js';
 
-const PAGES = {
-	VIDEOS: 'videos',
-	IMAGES: 'images'
-};
 
-class App extends HTMLElement  {
+const PAGES = [
+	new Page(
+		'videos',
+		'Videos',
+		`<my-videos></my-videos>`
+	),
+	new Page(
+		'images',
+		'Images',
+		`<my-images></my-images>`
+	)
+];
+
+
+class App extends BaseComponent  {
+	/**
+	 * @constructor
+	 */
 	constructor() {
 		super();
 
 		this.state = {
-			page: PAGES.VIDEOS
+			currentPageIndex: 0
 		};
 
-		this.Draw();
+		this.RequestDraw();
 	}
 
+	/**
+	 * Draws the component
+	 * @override
+	 */
 	Draw(){
-		let content = '';
-		switch( this.state.page ){
-			case PAGES.VIDEOS:
-				content = `<my-videos></my-videos>`;
-				break;
-			case PAGES.IMAGES:
-				content = `<my-images></my-images>`;
-				break;
-		}
+		let contentComponent = PAGES[this.state.currentPageIndex].componentTag;
 
 		this.innerHTML = `
-			<my-side-menu id="sideMenu" data-selected-link="` + this.state.page + `">
-				<a data-target="` + PAGES.VIDEOS + `"><span>Videos</span></a>
-				<a data-target="` + PAGES.IMAGES + `">Images</a>
-			</my-side-menu>
+			<my-side-menu></my-side-menu>
 			<div class="content">
-				` + content + `
+				` + contentComponent + `
 			</div>
 			<div class="clear"></div>
 		`;
 
+		let sideMenu = this.querySelector( 'my-side-menu' );
+		sideMenu.SetPages( PAGES );
+		sideMenu.SetCurrentPage( this.state.currentPageIndex );
+
 		this.BindEvents();
 	}
 
+	/**
+	 * Binds the events
+	 */
 	BindEvents(){
-		this.querySelector( '#sideMenu' ).OnSelectedLinkChange = ( url ) => {
+		this.querySelector( 'my-side-menu' ).OnSelectedLinkChange = ( url ) => {
 			this.HandleSideMenuOnSelectedLinkChange( url );
 		};
 	}
 
-	HandleSideMenuOnSelectedLinkChange( url ){
-		this.state.page = url;
-		this.Draw();
+	/**
+	 * Handles the OnSelectedLinkChange event from the SideMenu child component
+	 * @param {int} index
+	 */
+	HandleSideMenuOnSelectedLinkChange( index ){
+		this.state.currentPageIndex = index;
+		this.RequestDraw();
 	}
 }
 
