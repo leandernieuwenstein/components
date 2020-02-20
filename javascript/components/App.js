@@ -1,7 +1,7 @@
 import { BaseComponent } from './BaseComponent.js';
-import { SideMenu } from './SideMenu.js';
-import { Videos } from './Videos.js';
-import { Images } from './Images.js';
+import { SideMenuComponent } from './SideMenu.js';
+import { VideosComponent } from './Videos.js';
+import { ImagesComponent } from './Images.js';
 import { Page } from '../dataObjects/Page.js';
 
 
@@ -9,28 +9,32 @@ const PAGES = [
 	new Page(
 		'videos',
 		'Videos',
-		`<my-videos></my-videos>`
+		'VideosComponent'
 	),
 	new Page(
 		'images',
 		'Images',
-		`<my-images></my-images>`
+		'ImagesComponent'
 	)
 ];
 
 
-class App extends BaseComponent  {
+export class App extends BaseComponent  {
 	/**
+	 * @param {HTMLElement} root
 	 * @constructor
 	 */
-	constructor() {
-		super();
+	constructor( root ) {
+		super( root );
 
 		this.state = {
 			currentPageIndex: 0
 		};
 
-		this.RequestDraw();
+		this.children = {
+			sideMenu: {},
+			content: {}
+		};
 	}
 
 	/**
@@ -38,19 +42,30 @@ class App extends BaseComponent  {
 	 * @override
 	 */
 	Draw(){
-		let contentComponent = PAGES[this.state.currentPageIndex].componentTag;
+		let contentComponentName = PAGES[this.state.currentPageIndex].componentName;
 
-		this.innerHTML = `
-			<my-side-menu></my-side-menu>
+		this.root.innerHTML = `
+			<div class="sideMenu"></div>
 			<div class="content">
-				` + contentComponent + `
+				<div class="` + contentComponentName + `"></div>
 			</div>
 			<div class="clear"></div>
 		`;
 
-		let sideMenu = this.querySelector( 'my-side-menu' );
-		sideMenu.SetPages( PAGES );
-		sideMenu.SetCurrentPage( this.state.currentPageIndex );
+		this.children.sideMenu = new SideMenuComponent( this.root.querySelector( '.sideMenu' ) )
+		this.children.sideMenu.SetPages( PAGES );
+		this.children.sideMenu.SetCurrentPage( this.state.currentPageIndex );
+		this.children.sideMenu.Mount();
+
+		switch( contentComponentName ){
+			case 'VideosComponent':
+				this.children.content = new VideosComponent( this.root.querySelector( '.VideosComponent' ) );
+				break;
+			case 'ImagesComponent':
+				this.children.content = new ImagesComponent( this.root.querySelector( '.ImagesComponent' ) );
+				break;
+		}
+		this.children.content.Mount();
 
 		this.BindEvents();
 	}
@@ -59,7 +74,7 @@ class App extends BaseComponent  {
 	 * Binds the events
 	 */
 	BindEvents(){
-		this.querySelector( 'my-side-menu' ).OnSelectedLinkChange = ( url ) => {
+		this.children.sideMenu.OnSelectedLinkChange = ( url ) => {
 			this.HandleSideMenuOnSelectedLinkChange( url );
 		};
 	}

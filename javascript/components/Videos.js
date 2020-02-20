@@ -1,5 +1,5 @@
 import { BaseComponent } from './BaseComponent.js';
-import { Paginator } from './Paginator.js';
+import { PaginatorComponent } from './Paginator.js';
 
 const VIDEOLINKS = [
 	'z8KnVsRUH1Q',
@@ -10,31 +10,38 @@ const VIDEOLINKS = [
 	'NMQ8G7MqYC4'
 ];
 
-export class Videos extends BaseComponent  {
+export class VideosComponent extends BaseComponent  {
 	/**
+	 * @param {HTMLElement} root
 	 * @constructor
 	 */
-	constructor() {
-		super();
+	constructor( root ) {
+		super( root );
 
 		this.state = {
 			currentVideoIndex: 0
 		};
 
-		this.RequestDraw();
+		this.children = {
+			paginator: {}
+		};
 	}
 
 	/**
 	 * Draws the component
 	 */
 	Draw(){
-		this.innerHTML = `
+		this.root.innerHTML = `
 			<iframe width="560" height="315" src="https://www.youtube.com/embed/` + VIDEOLINKS[this.state.currentVideoIndex] + `"
 				frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
 				allowfullscreen></iframe><br />
-			<my-paginator data-page-count="` + VIDEOLINKS.length + `"
-				data-current-page="` + this.state.currentVideoIndex + `"></my-paginator>
+			<div class="paginatorComponent"></div>
 		`;
+
+		this.children.paginator = new PaginatorComponent( this.root.querySelector( '.paginatorComponent' ) );
+		this.children.paginator.SetPageCount( VIDEOLINKS.length );
+		this.children.paginator.SetCurrentPage( this.state.currentVideoIndex );
+		this.children.paginator.Mount();
 
 		this.BindEvents();
 	}
@@ -43,14 +50,13 @@ export class Videos extends BaseComponent  {
 	 * Binds the events
 	 */
 	BindEvents(){
-		let paginator = this.querySelector( 'my-paginator' );
-		paginator.OnNext = () => {
+		this.children.paginator.OnNext = () => {
 			this.HandlePaginatorOnNext();
 		};
-		paginator.OnPrevious = () => {
+		this.children.paginator.OnPrevious = () => {
 			this.HandlePaginatorOnPrevious();
 		};
-		paginator.OnPageClick = ( videoIndex ) => {
+		this.children.paginator.OnPageClick = ( videoIndex ) => {
 			this.HandlePaginatorOnPageClick( videoIndex );
 		};
 	}
@@ -84,5 +90,3 @@ export class Videos extends BaseComponent  {
 		this.RequestDraw();
 	}
 }
-
-customElements.define( 'my-videos', Videos );

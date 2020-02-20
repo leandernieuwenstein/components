@@ -5,18 +5,40 @@ import { BaseComponent } from './BaseComponent.js';
  *  data-page-count
  *  data-current-page
  */
-export class Paginator extends BaseComponent  {
+export class PaginatorComponent extends BaseComponent  {
 	/**
+	 * @param {HTMLElement} root
 	 * @constructor
 	 */
-	constructor(){
-		super();
+	constructor( root ) {
+		super( root );
+
+		this.props = {
+			pageCount: 0,
+			currentPage: 0
+		};
 
 		// Bindable events
 		this.OnNext = () => {};
 		this.OnPrevious = () => {};
 		this.OnPageClick = ( pageIndex ) => {};
+	}
 
+	/**
+	 * Sets the page count
+	 * @param {int} pageCount
+	 */
+	SetPageCount( pageCount ){
+		this.props.pageCount = pageCount;
+		this.RequestDraw();
+	}
+
+	/**
+	 * Sets the current page
+	 * @param {int} pageIndex
+	 */
+	SetCurrentPage( pageIndex ){
+		this.props.currentPage = pageIndex;
 		this.RequestDraw();
 	}
 
@@ -26,22 +48,22 @@ export class Paginator extends BaseComponent  {
 	Draw(){
 		let prevBtn = `<button class="previous">&lt;</button>`;
 		let nextBtn = `<button class="next">&gt;</button>`;
-		if( this.dataset.currentPage == 0 )
+		if( this.props.currentPage === 0 )
 			prevBtn = `<button class="previous" disabled>&lt;</button>`;
-		if( this.dataset.currentPage >= this.dataset.pageCount - 1 )
+		if( this.props.currentPage >= this.props.pageCount - 1 )
 			nextBtn = `<button class="next" disabled>&gt;</button>`;
 
 		let pageBtns = '';
-		for( let i = 0; i < this.dataset.pageCount; i++ ){
+		for( let i = 0; i < this.props.pageCount; i++ ){
 			let displayPageNr = i + 1;
 			let selected = '';
-			if( i == this.dataset.currentPage )
+			if( i === this.props.currentPage )
 				selected = ' selected';
 
 			pageBtns += `<button class="page-btn` + selected + `">` + displayPageNr + `</button>`;
 		}
 
-		this.innerHTML = prevBtn + pageBtns + nextBtn;
+		this.root.innerHTML = prevBtn + pageBtns + nextBtn;
 
 		this.BindEvents();
 	}
@@ -50,20 +72,18 @@ export class Paginator extends BaseComponent  {
 	 * Binds the events of this component
 	 */
 	BindEvents(){
-		this.querySelector( '.next' ).addEventListener('click', () => {
+		this.root.querySelector( '.next' ).addEventListener('click', () => {
 			this.OnNext();
 		} );
 
-		this.querySelector( '.previous' ).addEventListener('click', () => {
+		this.root.querySelector( '.previous' ).addEventListener('click', () => {
 			this.OnPrevious();
 		} );
 
-		this.querySelectorAll( '.page-btn' ).forEach( ( btn, index ) => {
+		this.root.querySelectorAll( '.page-btn' ).forEach( ( btn, index ) => {
 			btn.addEventListener('click', () => {
 				this.OnPageClick( index );
 			} );
 		} );
 	}
 }
-
-customElements.define( 'my-paginator', Paginator );

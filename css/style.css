@@ -27,7 +27,7 @@ img {
 	height: 200px;
 }
 
-my-app {
+#root {
 	display: flex;
 	min-height: 100%;
 }
@@ -42,7 +42,7 @@ my-app {
 	clear: both;
 }
 
-my-side-menu {
+.sideMenu {
 	width: 300px;
 	border-right: solid gray 1px;
 	display: block;
@@ -50,7 +50,7 @@ my-side-menu {
 	background: lightgray;
 }
 
-my-side-menu a {
+.sideMenu a {
 	display: block;
 	margin: 10px;
 	padding: 5px 10px;
@@ -61,7 +61,7 @@ my-side-menu a {
 	font-size: 20px;
 }
 
-my-side-menu a.selected {
+.sideMenu a.selected {
 	color: white;
 	background: black;
 }

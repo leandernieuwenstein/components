@@ -1,12 +1,13 @@
 import { BaseComponent } from './BaseComponent.js';
 import { Page } from '../dataObjects/Page.js';
 
-export class SideMenu extends BaseComponent  {
+export class SideMenuComponent extends BaseComponent  {
 	/**
+	 * @param {HTMLElement} root
 	 * @constructor
 	 */
-	constructor() {
-		super();
+	constructor( root ) {
+		super( root );
 		this.props = {
 			pages: [],
 			currentPageIndex: 0
@@ -43,7 +44,7 @@ export class SideMenu extends BaseComponent  {
 			content += `<a data-target="` + i + `"` + selected + `>` + this.props.pages[i].linkText + `</a>`;
 		}
 
-		this.innerHTML = content;
+		this.root.innerHTML = content;
 
 		this.BindEvents();
 	}
@@ -52,12 +53,12 @@ export class SideMenu extends BaseComponent  {
 	 * Binds the events
 	 */
 	BindEvents(){
-		for( let link of this.children ){
+		let links = this.root.querySelectorAll( 'a' );
+
+		for( let link of links ){
 			link.onclick = ( e ) => {
 				this.OnSelectedLinkChange( e.currentTarget.dataset.target );
 			};
 		}
 	}
 }
-
-customElements.define( 'my-side-menu', SideMenu );

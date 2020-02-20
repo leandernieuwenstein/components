@@ -1,9 +1,15 @@
-export class BaseComponent extends HTMLElement  {
+export class BaseComponent  {
 	/**
+	 * @param {HTMLElement} root
 	 * @constructor
 	 */
-	constructor(){
-		super();
+	constructor( root ){
+		this.root = root;
+
+		this.state = {};
+		this.props = {};
+		this.children = {};
+		this.isMounted = false;
 	}
 
 	/**
@@ -21,4 +27,12 @@ export class BaseComponent extends HTMLElement  {
 	 * Draws the component
 	 */
 	Draw(){}
+
+	/**
+	 * Mounts the component
+	 */
+	Mount(){
+		this.isMounted = true;
+		this.RequestDraw();
+	}
 }
